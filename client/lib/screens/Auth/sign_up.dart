@@ -6,7 +6,7 @@ import 'dart:convert';
 class SignUp extends StatelessWidget {
   SignUp({super.key});
 
-  static const String baseUrl = "http://localhost:4000";
+  static const String baseUrl = "http://192.168.1.5:4000";
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -123,7 +123,7 @@ class SignUp extends StatelessWidget {
       if (response.statusCode == 201) {
         final data = jsonDecode(response.body);
         return ResponseModel(
-          isSuccess: data['success'],
+          isSuccess: true,
           message: data['message'],
         );
       } else {
