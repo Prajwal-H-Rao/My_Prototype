@@ -2,7 +2,7 @@ import 'package:client/screens/Auth/login.dart';
 import 'package:client/screens/Auth/sign_up.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
   runApp(const MyApp());
 }
 

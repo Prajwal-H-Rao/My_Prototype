@@ -1,3 +1,4 @@
+import 'package:client/config.dart';
 import 'package:client/models/response.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -6,7 +7,7 @@ import 'dart:convert';
 class SignUp extends StatelessWidget {
   SignUp({super.key});
 
-  static const String baseUrl = "http://192.168.1.5:4000";
+  static String? baseUrl = Config.baseUrl;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();

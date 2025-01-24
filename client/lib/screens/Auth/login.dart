@@ -1,3 +1,4 @@
+import 'package:client/config.dart';
 import 'package:client/models/response.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -6,7 +7,7 @@ import 'package:http/http.dart';
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
-  static const String baseUrl = "http://192.168.1.5:4000";
+  static String? baseUrl = Config.baseUrl;
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
