@@ -10,6 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
+  console.log(name, email, password);
   try {
     const existinUser = await User.findOne({ email });
     if (existinUser)
@@ -29,13 +30,16 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.find({ email });
+    const user = await User.findOne({ email });
+    // console.log(user);
     if (!user) return res.status(404).json({ message: "The user not found" });
-
+    // console.log(user.password);
     const isMatch = await bcryptjs.compare(password, user.password);
+    // console.log(isMatch);
     if (!isMatch)
       return res.status(401).json({ message: "Invalid credentials" });
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1d" });
+    // console.log(token);
     res.status(200).json({ token });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
