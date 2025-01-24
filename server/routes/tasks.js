@@ -54,3 +54,43 @@ router.post("/", authenticate, async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+//This path is to update a particular task
+
+router.put("/:id", authenticate, async (req, res) => {
+  const { id } = req.params;
+  const { title, date } = req.body;
+  try {
+    const updateTask = await User.findOneAndUpdate(
+      {
+        _id: id,
+        user: req.user.id,
+      },
+      { title, date },
+      { new: true }
+    );
+
+    if (!updateTask)
+      return res
+        .status(404)
+        .json({ message: "Task not found or unauthorized" });
+
+    res.status(200).json(updatedTask);
+  } catch (err) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+//This post is to delete a particular task
+
+router.delete("/:id", authenticate, async (req, res) => {
+  const { id } = req.params;
+  try {
+    await Task.findByIdAndDelete(id);
+    res.status(200).json({ message: "Task deleted" });
+  } catch (err) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+module.exports = router;
