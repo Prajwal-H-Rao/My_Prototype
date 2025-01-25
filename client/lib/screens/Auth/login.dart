@@ -73,6 +73,7 @@ class LoginScreen extends StatelessWidget {
                         await prefs.setString('name', response.name ?? "Guest");
                         await prefs.setString(
                             'email', response.email ?? "Not Provided");
+                        await prefs.setString('key', response.token ?? '');
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("Login successful!")),
                         );

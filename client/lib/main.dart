@@ -1,6 +1,6 @@
 import 'package:client/screens/Auth/login.dart';
 import 'package:client/screens/Auth/sign_up.dart';
-import 'package:client/screens/Home/home.dart';
+import 'package:client/screens/Home/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
