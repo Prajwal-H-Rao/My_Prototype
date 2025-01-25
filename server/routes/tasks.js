@@ -21,35 +21,31 @@ const authenticate = (req, res, next) => {
   }
 };
 
-//This route is used to fetch the tasks of a particular date
+//This route is for uploading a new task
 
-router.get("/:date", authenticate, async (req, res) => {
-  const { date } = req.params;
+router.get("/", authenticate, async (req, res) => {
   try {
-    const tasks = await Task.find({
-      user: req.user.id,
-      date: new Date(date),
-    });
-
-    res.status(200).json(tasks);
+    const allTasks = await Task.find({ user: req.user.id });
+    console.log(allTasks.length);
+    if (allTasks) {
+      console.log(allTasks);
+      res.status(200).json({ tasks: allTasks });
+    }
   } catch (err) {
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ tasks: [] });
   }
 });
 
-//This route is for uploading a new task
-
 router.post("/", authenticate, async (req, res) => {
-  const { title, date } = req.body;
-
+  const { title } = req.body;
   try {
+    // console.log("api call reached");
     const newTask = new Task({
       title,
-      date,
       user: req.user.id,
     });
     await newTask.save();
-    res.status(201).json(newTask);
+    res.status(201).json({ newTask });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
@@ -57,16 +53,15 @@ router.post("/", authenticate, async (req, res) => {
 
 //This path is to update a particular task
 
-router.put("/:id", authenticate, async (req, res) => {
-  const { id } = req.params;
-  const { title, date } = req.body;
+router.put("/", authenticate, async (req, res) => {
+  const { title } = req.body;
   try {
     const updateTask = await User.findOneAndUpdate(
       {
-        _id: id,
+        title: title,
         user: req.user.id,
       },
-      { title, date },
+      { title },
       { new: true }
     );
 

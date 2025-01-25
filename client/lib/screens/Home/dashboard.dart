@@ -1,3 +1,4 @@
+import 'package:client/models/task.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:client/config.dart';
@@ -15,7 +16,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   String email = "";
   String authToken = "";
-  List<String> tasks = [];
+  List<Taskmodel> tasks = [];
 
   @override
   void initState() {
@@ -29,18 +30,42 @@ class HomePageState extends State<HomePage> {
       email = prefs.getString('email') ?? "Not Provided";
       authToken = prefs.getString('key') ?? "";
     });
+
+    final uri = Uri.parse('${HomePage.baseUrl}/tasks');
+    final response =
+        await http.get(uri, headers: {'Authorisation': 'Bearer $authToken'});
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      List<Taskmodel> temp = (data['tasks'] as List)
+          .map((task) => Taskmodel.fromJson(task))
+          .toList();
+      setState(() {
+        tasks = temp;
+      });
+    }
+    //get all the tasks from the database
   }
 
-  void addTask(String task) {
-    setState(() {
-      tasks.add(task);
-    });
+  void addTask(String task) async {
+    final uri = Uri.parse('${HomePage.baseUrl}/tasks');
+    final response = await http.post(uri,
+        headers: {
+          'Content-Type': "application/json",
+          'Authorisation': 'Bearer $authToken'
+        },
+        body: jsonEncode({"title": task}));
+    if (response.statusCode == 201) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        tasks.add(data['title']);
+      });
+    }
   }
 
   void editTask(int index, String newTask) {
     setState(() {
       setState(() {
-        tasks[index] = newTask;
+        // tasks[index] = newTask;
       });
     });
   }
@@ -57,7 +82,10 @@ class HomePageState extends State<HomePage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Add Task'),
+          title: Text(
+            'Add Task',
+            style: TextStyle(color: Colors.purple.shade200),
+          ),
           content: TextField(
             onChanged: (value) {
               newTask = value;
@@ -81,18 +109,21 @@ class HomePageState extends State<HomePage> {
   }
 
   void showEditTaskDialog(int index) {
-    String updatedTask = tasks[index];
+    String updatedTask = tasks[index].title;
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Edit Task'),
+          title: Text(
+            'Edit Task',
+            style: TextStyle(color: Colors.purple.shade200),
+          ),
           content: TextField(
             onChanged: (value) {
               updatedTask = value;
             },
             decoration: InputDecoration(hintText: "Update task"),
-            controller: TextEditingController(text: tasks[index]),
+            controller: TextEditingController(text: tasks[index].title),
           ),
           actions: [
             TextButton(
@@ -113,25 +144,48 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blueGrey.shade100,
       appBar: AppBar(
-        title: const Text("Get It Done"),
+        title: const Text(
+          "Get It Done",
+          style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.purple.shade200,
+        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
+            color: Colors.red,
             onPressed: _logout,
           ),
         ],
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Task List
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              "Tasks:",
+              style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.purple),
+            ),
+          ),
           Expanded(
             child: ListView.builder(
               itemCount: tasks.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(tasks[index]),
+                  title: Text(
+                    tasks[index].title,
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.purple.shade300),
+                  ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -140,7 +194,10 @@ class HomePageState extends State<HomePage> {
                         onPressed: () => showEditTaskDialog(index),
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete),
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                        ),
                         onPressed: () => deleteTask(index),
                       ),
                     ],
