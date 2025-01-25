@@ -82,10 +82,11 @@ router.put("/", authenticate, async (req, res) => {
 
 //This post is to delete a particular task
 
-router.delete("/:id", authenticate, async (req, res) => {
-  const { id } = req.params;
+router.delete("/", authenticate, async (req, res) => {
+  const { title, user } = req.body;
+  const searchParam = { title: title, user: user };
   try {
-    await Task.findByIdAndDelete(id);
+    await Task.findOneAndDelete(searchParam);
     res.status(200).json({ message: "Task deleted" });
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });

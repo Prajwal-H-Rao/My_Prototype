@@ -79,10 +79,21 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  void deleteTask(int index) {
-    setState(() {
-      tasks.removeAt(index);
-    });
+  void deleteTask(int index) async {
+    final uri = Uri.parse('${HomePage.baseUrl}/tasks');
+    final response = await http.delete(uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorisation': 'Bearer $authToken'
+        },
+        body: jsonEncode(
+            {"title": tasks[index].title, "user": tasks[index].user}));
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      setState(() {
+        tasks.removeAt(index);
+      });
+    }
   }
 
   void showAddTaskDialog() {
