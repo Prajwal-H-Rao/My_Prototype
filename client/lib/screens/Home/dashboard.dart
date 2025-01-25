@@ -56,7 +56,8 @@ class HomePageState extends State<HomePage> {
         body: jsonEncode({"title": task}));
     if (response.statusCode == 201) {
       final data = jsonDecode(response.body)['newTask'];
-      final newTask = Taskmodel(title: data['title'], user: data['user']);
+      final newTask = Taskmodel(
+          title: data['title'], user: data['user'], isDashed: data['isDashed']);
       setState(() {
         tasks.add(newTask);
       });
@@ -70,11 +71,18 @@ class HomePageState extends State<HomePage> {
           'Content-Type': 'application/json',
           'Authorisation': 'Bearer $authToken'
         },
-        body: jsonEncode({"title": tasks[index].title, "newtitle": newTask}));
+        body: jsonEncode({
+          "title": tasks[index].title,
+          "newtitle": newTask,
+          "isDashed": tasks[index].isDashed
+        }));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       setState(() {
-        tasks[index] = Taskmodel(title: data['title'], user: data['user']);
+        tasks[index] = Taskmodel(
+            title: data['title'],
+            user: data['user'],
+            isDashed: data['isDashed']);
       });
     }
   }
@@ -88,7 +96,6 @@ class HomePageState extends State<HomePage> {
         },
         body: jsonEncode(
             {"title": tasks[index].title, "user": tasks[index].user}));
-    print(response.statusCode);
     if (response.statusCode == 200) {
       setState(() {
         tasks.removeAt(index);
@@ -104,7 +111,7 @@ class HomePageState extends State<HomePage> {
         return AlertDialog(
           title: Text(
             'Add Task',
-            style: TextStyle(color: Colors.purple.shade200),
+            style: TextStyle(color: Colors.purple.shade300),
           ),
           content: TextField(
             onChanged: (value) {
@@ -164,18 +171,18 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueGrey.shade100,
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         title: const Text(
           "Get It Done",
           style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.purple.shade200,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.purple.shade100,
+        foregroundColor: Colors.black,
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
-            color: Colors.red,
+            color: Colors.red.shade300,
             onPressed: _logout,
           ),
         ],
@@ -187,7 +194,7 @@ class HomePageState extends State<HomePage> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              "Tasks:",
+              "Your Tasks:",
               style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
@@ -198,29 +205,58 @@ class HomePageState extends State<HomePage> {
             child: ListView.builder(
               itemCount: tasks.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(
-                    tasks[index].title,
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.purple.shade300),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.edit),
-                        onPressed: () => showEditTaskDialog(index),
+                return Padding(
+                  padding:
+                      const EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        tasks[index].isDashed = !tasks[index].isDashed;
+                      });
+                    },
+                    child: ListTile(
+                      leading: tasks[index].isDashed
+                          ? CircleAvatar(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.green,
+                              child: Icon(
+                                Icons.check,
+                                size: 30,
+                              ),
+                            )
+                          : CircleAvatar(),
+                      title: Text(
+                        tasks[index].title,
+                        style: TextStyle(
+                            decoration: tasks[index].isDashed
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
+                            decorationColor: Colors.green.shade600,
+                            decorationThickness: 2,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.purple.shade200),
                       ),
-                      IconButton(
-                        icon: Icon(
-                          Icons.delete,
-                          color: Colors.red,
-                        ),
-                        onPressed: () => deleteTask(index),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.edit,
+                              color: Colors.lightBlue.shade200,
+                            ),
+                            onPressed: () => showEditTaskDialog(index),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.red.shade300,
+                            ),
+                            onPressed: () => deleteTask(index),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 );
               },
@@ -231,7 +267,7 @@ class HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple.shade200),
+                  backgroundColor: Colors.purple.shade100),
               onPressed: showAddTaskDialog,
               child: Text('Add Task'),
             ),

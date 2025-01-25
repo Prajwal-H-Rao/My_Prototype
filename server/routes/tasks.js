@@ -43,6 +43,7 @@ router.post("/", authenticate, async (req, res) => {
     const newTask = new Task({
       title,
       user: req.user.id,
+      isDashed: false,
     });
     await newTask.save();
     res.status(201).json({ newTask });
@@ -54,7 +55,7 @@ router.post("/", authenticate, async (req, res) => {
 //This path is to update a particular task
 
 router.put("/", authenticate, async (req, res) => {
-  const { title, newtitle } = req.body;
+  const { title, newtitle, isDashed } = req.body;
   // console.log(title, newtitle);
 
   const update = { title: newtitle };
@@ -63,6 +64,7 @@ router.put("/", authenticate, async (req, res) => {
     const taskToBeUpdated = await Task.findOne({
       title: title,
       user: req.user.id,
+      isDashed: isDashed,
     });
     const updateTask = await Task.findOneAndUpdate(
       { _id: taskToBeUpdated._id },
