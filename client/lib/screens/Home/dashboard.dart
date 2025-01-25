@@ -8,6 +8,10 @@ import 'package:http/http.dart' as http;
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
   static String baseUrl = Config.baseUrl;
+//   create a context file like the one below and replace with your system ip in the lib folder
+//   class Config {
+//   static String baseUrl = "http://192.168.x.y:4000";
+// }
 
   @override
   HomePageState createState() => HomePageState();
@@ -24,6 +28,8 @@ class HomePageState extends State<HomePage> {
     _loadUserData();
   }
 
+  //This is the logic to load the authorisation key and the unique email
+  // of the user stored after authentication in the secure storage
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -46,6 +52,8 @@ class HomePageState extends State<HomePage> {
     //get all the tasks from the database
   }
 
+  //CRUD operations
+  //This is the logic for the new task addition into the database
   void addTask(String task) async {
     final uri = Uri.parse('${HomePage.baseUrl}/tasks');
     final response = await http.post(uri,
@@ -64,6 +72,7 @@ class HomePageState extends State<HomePage> {
     }
   }
 
+  //This uses a put request to put the updated data into the database
   void editTask(int index, String newTask) async {
     final uri = Uri.parse('${HomePage.baseUrl}/tasks');
     final response = await http.put(uri,
@@ -87,6 +96,7 @@ class HomePageState extends State<HomePage> {
     }
   }
 
+  //This funtion deletes the task from the data base
   void deleteTask(int index) async {
     final uri = Uri.parse('${HomePage.baseUrl}/tasks');
     final response = await http.delete(uri,
@@ -103,6 +113,7 @@ class HomePageState extends State<HomePage> {
     }
   }
 
+  //This shows the add task dialogue
   void showAddTaskDialog() {
     String newTask = '';
     showDialog(
@@ -135,6 +146,7 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+  //This shows the edit task dialogue
   void showEditTaskDialog(int index) {
     String updatedTask = tasks[index].title;
     showDialog(
@@ -277,6 +289,8 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+//This is for the logout operation where we clear the secure storage contents and
+// push the context to login path to return to the login screen
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();

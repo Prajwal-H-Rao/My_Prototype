@@ -1,3 +1,5 @@
+//This model is used in the authentication part of the application
+
 class ResponseModel {
   final bool isSuccess;
   final String message;
