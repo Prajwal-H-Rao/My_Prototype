@@ -3,6 +3,7 @@ import 'package:client/models/response.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
@@ -67,10 +68,15 @@ class LoginScreen extends StatelessWidget {
                       final response = await loginUser(email, password);
 
                       if (response.isSuccess && context.mounted) {
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setBool('isLoggedIn', true);
+                        await prefs.setString('name', response.name ?? "Guest");
+                        await prefs.setString(
+                            'email', response.email ?? "Not Provided");
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("Login successful!")),
                         );
-                        Navigator.pushNamed(
+                        Navigator.pushReplacementNamed(
                             context, "/home"); // Navigate to Home Screen
                       } else {
                         if (context.mounted) {
@@ -119,7 +125,9 @@ class LoginScreen extends StatelessWidget {
         return ResponseModel(
             isSuccess: true,
             message: 'Logged in sucessfully',
-            token: data['token']);
+            token: data['token'],
+            name: data['name'],
+            email: data['email']);
       } else {
         final data = jsonDecode(response.body);
         return ResponseModel(

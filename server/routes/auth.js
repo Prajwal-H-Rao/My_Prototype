@@ -40,7 +40,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1d" });
     // console.log(token);
-    res.status(200).json({ token });
+    res.status(200).json({ token, email: user.email, name: user.name });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
