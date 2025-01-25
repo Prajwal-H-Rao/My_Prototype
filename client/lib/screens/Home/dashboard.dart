@@ -55,19 +55,28 @@ class HomePageState extends State<HomePage> {
         },
         body: jsonEncode({"title": task}));
     if (response.statusCode == 201) {
-      final data = jsonDecode(response.body);
+      final data = jsonDecode(response.body)['newTask'];
+      final newTask = Taskmodel(title: data['title'], user: data['user']);
       setState(() {
-        tasks.add(data['title']);
+        tasks.add(newTask);
       });
     }
   }
 
-  void editTask(int index, String newTask) {
-    setState(() {
+  void editTask(int index, String newTask) async {
+    final uri = Uri.parse('${HomePage.baseUrl}/tasks');
+    final response = await http.put(uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorisation': 'Bearer $authToken'
+        },
+        body: jsonEncode({"title": tasks[index].title, "newtitle": newTask}));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
       setState(() {
-        // tasks[index] = newTask;
+        tasks[index] = Taskmodel(title: data['title'], user: data['user']);
       });
-    });
+    }
   }
 
   void deleteTask(int index) {

@@ -54,23 +54,27 @@ router.post("/", authenticate, async (req, res) => {
 //This path is to update a particular task
 
 router.put("/", authenticate, async (req, res) => {
-  const { title } = req.body;
+  const { title, newtitle } = req.body;
+  // console.log(title, newtitle);
+
+  const update = { title: newtitle };
+  // console.log(updateTask);
   try {
-    const updateTask = await User.findOneAndUpdate(
-      {
-        title: title,
-        user: req.user.id,
-      },
-      { title },
+    const taskToBeUpdated = await Task.findOne({
+      title: title,
+      user: req.user.id,
+    });
+    const updateTask = await Task.findOneAndUpdate(
+      { _id: taskToBeUpdated._id },
+      update,
       { new: true }
     );
-
     if (!updateTask)
       return res
         .status(404)
         .json({ message: "Task not found or unauthorized" });
 
-    res.status(200).json(updatedTask);
+    res.status(200).json(updateTask);
   } catch (err) {
     res.status(500).json({ error: "Internal server error" });
   }
