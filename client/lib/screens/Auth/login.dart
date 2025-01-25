@@ -82,8 +82,9 @@ class LoginScreen extends StatelessWidget {
                       } else {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(response.message)),
+                            SnackBar(content: Text("Not registered")),
                           );
+                          Navigator.pushReplacementNamed(context, "/signup");
                         }
                       }
                     } catch (error) {

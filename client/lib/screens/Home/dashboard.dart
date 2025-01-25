@@ -185,6 +185,7 @@ class HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           "Get It Done",
           style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
